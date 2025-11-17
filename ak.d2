@@ -27,7 +27,7 @@ algokit_utils
 
 puya: {
     puya    
-    puya-ts
+    puyats
     algorand-typescript
     algorand-typescript-testing
     puyapy
@@ -53,6 +53,8 @@ cli: {
   generate
   compile
   dispenser
+  project
+  task
   localnet: {
     explore
     goal
@@ -80,10 +82,7 @@ localnet.conduit -> localnet.postgres: "export blocks"
 localnet.indexer <-> localnet.postgres: "query blocks"
 
 # Subscriber
-algokit_subscriber -> localnet.indexer
-algokit_subscriber -> localnet.algod.API
 algokit_subscriber -> algosdk: "depends on"
-
 
 # algosdk
 algosdk -> localnet.algod.API
@@ -93,19 +92,27 @@ algosdk -> localnet.kmd
 # Puya
 puya.puya -> TEAL: "compiles"
 puya.puyapy -> puya.puya: "generates AWST from AST"
-puya.algorand-typescript -> puya.puya-ts: "provides frontend"
+puya.algorand-typescript -> puya.puyats: "provides frontend"
 puya.algopy -> puya.puyapy: "provides frontend"
 puya.algopy -> puya.algorand-python-testing
-puya.puya-ts -> puya.puya: "generates AWST from AST"
-puya.puya-ts -> puya.algorand-typescript-testing
+puya.puyats -> puya.puya: "generates AWST from AST"
+puya.puyats -> puya.algorand-typescript-testing
+puya.puyapy-ls <-> puya.puyapy
+puya.puyats <-> puya.puyats-ls
 
-
+# Utils
 algokit_utils -> algosdk: "depends on"
+
+# LORA
+LORA -> algokit_utils: "depends on"
+LORA -> algokit_subscriber: "depends on"
 
 # ARC56
 puya.puya -> ARC56: "generates"
 ARC56 -> algokit_utils: "drives AppClient behavior"
 ARC56 -> algokit_client_generator
+
+# Client generator
 algokit_client_generator -> algokit_utils: "uses in generated code"
 
 # CLI
@@ -115,7 +122,7 @@ cli.localnet.manage <-> localnet
 cli.dispenser <-> dispenser
 cli.generate -> algokit_client_generator
 cli.compile -> puya.puyapy
-cli.compile -> puya.puya-ts
+cli.compile -> puya.puyats
 
 
 
