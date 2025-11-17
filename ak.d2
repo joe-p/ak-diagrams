@@ -1,0 +1,121 @@
+direction: up
+
+#############
+# Components
+############# 
+
+dispenser: "Testnet Dispsener"
+
+LORA
+
+localnet: {
+  label: "AlgoKit Localnet"
+  indexer
+  algod: {
+    node
+    API
+    goal
+  }
+  kmd
+  conduit
+  postgres
+}
+
+algosdk
+algokit_subscriber
+algokit_utils
+
+puya: {
+    puya    
+    puya-ts
+    algorand-typescript
+    algorand-typescript-testing
+    puyapy
+    algopy
+    algorand-python-testing
+    puyapy-ls
+    puyats-ls
+}
+
+ARC56: {
+  label: "ARC56: App Spec"
+  ARC4: "ARC4: ABI"
+  ARC22: "ARC22: readonly"
+  ARC28: "ARC28: events"
+}
+
+algokit_client_generator
+
+TEAL
+
+cli: {
+  label: "AlgoKit CLI"
+  generate
+  compile
+  dispenser
+  localnet: {
+    explore
+    goal
+    manage: {
+      start
+      stop
+      reset
+      config
+      console
+      logs
+    }
+  }
+}
+
+################
+# Relationships
+################
+
+# Localnet
+
+localnet.algod.api <-> localnet.algod.node
+localnet.algod.goal <-> localnet.algod.API
+localnet.conduit <-> localnet.algod.API: "get blocks"
+localnet.conduit -> localnet.postgres: "export blocks"
+localnet.indexer <-> localnet.postgres: "query blocks"
+
+# Subscriber
+algokit_subscriber -> localnet.indexer
+algokit_subscriber -> localnet.algod.API
+algokit_subscriber -> algosdk: "depends on"
+
+
+# algosdk
+algosdk -> localnet.algod.API
+algosdk -> localnet.indexer
+algosdk -> localnet.kmd
+
+# Puya
+puya.puya -> TEAL: "compiles"
+puya.puyapy -> puya.puya: "generates AWST from AST"
+puya.algorand-typescript -> puya.puya-ts: "provides frontend"
+puya.algopy -> puya.puyapy: "provides frontend"
+puya.algopy -> puya.algorand-python-testing
+puya.puya-ts -> puya.puya: "generates AWST from AST"
+puya.puya-ts -> puya.algorand-typescript-testing
+
+
+algokit_utils -> algosdk: "depends on"
+
+# ARC56
+puya.puya -> ARC56: "generates"
+ARC56 -> algokit_utils: "drives AppClient behavior"
+ARC56 -> algokit_client_generator
+algokit_client_generator -> algokit_utils: "uses in generated code"
+
+# CLI
+cli.localnet.explore -> LORA: "opens"
+cli.localnet.goal <-> localnet.algod.goal
+cli.localnet.manage <-> localnet
+cli.dispenser <-> dispenser
+cli.generate -> algokit_client_generator
+cli.compile -> puya.puyapy
+cli.compile -> puya.puya-ts
+
+
+
