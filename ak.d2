@@ -35,6 +35,8 @@ puya: {
     algorand-python-testing
     puyapy-ls
     puyats-ls
+    puyapy-ls-vsc: Algorand Python VSCode Extension
+    puyats-ls-vsc: Algorand TypeScript VSCode Extension
 }
 
 ARC56: {
@@ -45,6 +47,8 @@ ARC56: {
 }
 
 algokit_client_generator
+
+algokit_avm_vscode_debugger
 
 TEAL
 
@@ -99,6 +103,8 @@ puya.puyats -> puya.puya: "generates AWST from AST"
 puya.puyats -> puya.algorand-typescript-testing
 puya.puyapy-ls <-> puya.puyapy
 puya.puyats <-> puya.puyats-ls
+puya.puyats-ls -> puya.puyats-ls-vsc
+puya.puyapy-ls -> puya.puyapy-ls-vsc
 
 # Utils
 algokit_utils -> algosdk: "depends on"
@@ -124,5 +130,5 @@ cli.generate -> algokit_client_generator
 cli.compile -> puya.puyapy
 cli.compile -> puya.puyats
 
-
-
+# Debugger 
+algokit_avm_vscode_debugger -> algosdk: "depends on"
